@@ -1,0 +1,65 @@
+
+<%@ page import="java.sql.*" %>
+
+<%! 
+public Connection getConnection() {
+    Connection conn = null;
+    try {
+        Class.forName("org.postgresql.Driver");
+
+        String url = "jdbc:postgresql://localhost:5432/chatbot_db";
+        String user = "postgres";
+        String pass = "Shreya@1807";
+
+        conn = DriverManager.getConnection(url, user, pass);
+
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+    return conn;
+}
+%>
+
+<%
+Connection conn = getConnection();
+
+if(conn == null){
+    out.println("Database connection failed!");
+    return;
+}
+
+Statement stmt = null;
+
+try {
+    stmt = conn.createStatement();
+
+    stmt.executeUpdate("CREATE TABLE IF NOT EXISTS intents (" +
+                       "id SERIAL PRIMARY KEY, " +
+                       "intent_name VARCHAR(50) UNIQUE NOT NULL)");
+
+    stmt.executeUpdate("CREATE TABLE IF NOT EXISTS responses (" +
+                       "id SERIAL PRIMARY KEY, " +
+                       "intent_id INT REFERENCES intents(id), " +
+                       "response_text TEXT NOT NULL)");
+
+    stmt.executeUpdate("CREATE TABLE IF NOT EXISTS chat_logs (" +
+                       "id SERIAL PRIMARY KEY, " +
+                       "user_message TEXT, " +
+                       "bot_response TEXT, " +
+                       "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+
+    out.println("Tables created successfully!");
+
+} catch(Exception e) {
+    out.println("Error: " + e.getMessage());
+    e.printStackTrace();
+} finally {
+    try {
+        if(stmt != null) stmt.close();
+        if(conn != null) conn.close();
+    } catch(Exception e) {
+        e.printStackTrace();
+    }
+}
+%>
+

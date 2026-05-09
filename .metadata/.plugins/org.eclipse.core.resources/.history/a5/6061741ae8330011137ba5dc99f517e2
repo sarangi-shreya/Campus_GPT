@@ -1,0 +1,23 @@
+<%@ page import = "java.sql.*"%>
+<%!
+public Connection getConnection() {
+	Connection conn = null;
+	try {
+		Class.forName("org.postgresql.Driver");
+		String url = "jdbc:postgresql://localhost:5432/college_chatbot";
+		String user = "postgres";
+		String pass = "Shreya@1807";
+		
+		conn = DriverManager.getConnection(url,user,pass);
+		if(conn!=null)
+		{
+			System.out.println("Database Connected Successfully!");
+		}
+	}
+	catch(Exception e) {
+		System.out.println("Database Connection failed!");
+		e.printStackTrace();
+	}
+	return conn;
+}
+%>
